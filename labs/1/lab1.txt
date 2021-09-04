@@ -1,0 +1,155 @@
+mysql> #1
+mysql> #1. Display all the existing databases in MySQL server host.
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| E16388Lab02        |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
+
+mysql> #2. Create a database called “BookShop”.
+mysql> CREATE DATABASE BookShop;
+Query OK, 1 row affected (0.10 sec)
+
+mysql>  SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| BookShop           |
+| E16388Lab02        |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+6 rows in set (0.00 sec)
+
+mysql> #3. Select or access “BookShop” database
+mysql> SELECT BookShop;
+ERROR 1054 (42S22): Unknown column 'BookShop' in 'field list'
+mysql> USE BookShop;
+Database changed
+mysql> #4. Within that database, create a table called “Book” with the following fields.
+mysql> CREATE TABLE Book
+    -> (BookID CHAR(5) PRIMARY KEY,
+    -> Title VARCHAR(50),
+    -> Author VARCHAR(30),
+    -> Category INT,
+    -> Price DECIMAL(8,2),
+    -> PubID CHAR(6));
+Query OK, 0 rows affected (0.55 sec)
+
+mysql> SHOW TABLES;
++--------------------+
+| Tables_in_BookShop |
++--------------------+
+| Book               |
++--------------------+
+1 row in set (0.00 sec)
+
+mysql> DESC Book;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| BookID   | char(5)      | NO   | PRI | NULL    |       |
+| Title    | varchar(50)  | YES  |     | NULL    |       |
+| Author   | varchar(30)  | YES  |     | NULL    |       |
+| Category | int(11)      | YES  |     | NULL    |       |
+| Price    | decimal(8,2) | YES  |     | NULL    |       |
+| PubID    | char(6)      | YES  |     | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+6 rows in set (0.01 sec)
+
+mysql>
+mysql>
+mysql> #5. Display the structure of the “Book” table.
+mysql>
+mysql>
+mysql> DESC Book;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| BookID   | char(5)      | NO   | PRI | NULL    |       |
+| Title    | varchar(50)  | YES  |     | NULL    |       |
+| Author   | varchar(30)  | YES  |     | NULL    |       |
+| Category | int(11)      | YES  |     | NULL    |       |
+| Price    | decimal(8,2) | YES  |     | NULL    |       |
+| PubID    | char(6)      | YES  |     | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+mysql>
+mysql> #6. Create another table called “Publisher” with the following fields.
+mysql>
+mysql>
+mysql> CREATE TABLE Publisher
+    -> (PubID CHAR(6) PRIMARY KEY,
+    -> PublisherName VARCHAR(30),
+    -> RegisteredDate DATE,
+    -> Country VARCHAR(15));
+Query OK, 0 rows affected (0.36 sec)
+
+mysql>
+mysql> #7. Display the structure of the “Publisher” table.
+mysql>
+mysql> DESC Publisher;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| PubID          | char(6)     | NO   | PRI | NULL    |       |
+| PublisherName  | varchar(30) | YES  |     | NULL    |       |
+| RegisteredDate | date        | YES  |     | NULL    |       |
+| Country        | varchar(15) | YES  |     | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql>
+mysql> #8. Display all the tables in the “BookShop” database.
+mysql>
+mysql> SHOW TABLES;
++--------------------+
+| Tables_in_BookShop |
++--------------------+
+| Book               |
+| Publisher          |
++--------------------+
+2 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql> #9. Remove the table “Book”.
+mysql>
+mysql> DROP TABLE Book;
+Query OK, 0 rows affected (0.16 sec)
+
+mysql> SHOW TABLES;
++--------------------+
+| Tables_in_BookShop |
++--------------------+
+| Publisher          |
++--------------------+
+1 row in set (0.00 sec)
+
+mysql>
+mysql> #10.Remove the database “BookShop”.
+mysql>
+mysql> DROP DATABASE BookShop;
+Query OK, 1 row affected (0.31 sec)
+
+mysql>
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| E16388Lab02        |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)

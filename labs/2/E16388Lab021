@@ -1,0 +1,30 @@
+CREATE TABLE MOVIE
+
+
+
+
+("101","Gone with the Wind",1939,"Victor Fleming"),
+("102","Star Wars",1977,"George Lucas"),
+("103","The Sound of Music",1965,"Robert Wise"),
+("104","E.T.",1982,"Steven Speilberg"),
+("105","Titanic",1997,"James Cameron"),
+("106","Snow White",1937,NULL),
+("107","Avatar",2009,"James Cameron"),
+("108","Raiders of Lost Ark",1981,"Steven Speilberg");
+
+
+
+(Movie_ID CHAR(3) PRIMARY KEY,
+     Title VARCHAR(40),
+     Year YEAR,
+    Director VARCHAR(30));
+
+
+ ("201","Sarah Martinez"),
+ ("202","Daniel Lewis"),
+ ("203","Brittany Harris"),
+ ("204","Mike Anderson"),
+ ("205","Chris Jackson"),
+ ("206","Elizabeth Thomas"),
+ ("207","James Cameron"),
+ ("208","Ashley White");

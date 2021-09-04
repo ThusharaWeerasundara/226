@@ -1,0 +1,319 @@
+
+E/16/388
+Weerasundara W.M.T.M.P.B.
+CO 226 LAB 6
+Views, Triggers, Stored Procedures 
+
+
+
+1.  Create a table named Student to insert the above data. Determine a suitable primary key for this table. 
+	Populate your table with these data. 
+
+mysql> CREATE TABLE Student
+    -> (Name varchar(40),
+    -> Registration_Number char(3) PRIMARY KEY,
+    -> GPA DECIMAL(3,2),
+    -> Convocation_Registration_Number char(3),
+    -> Class varchar(50));
+ERROR 1046 (3D000): No database selected
+mysql>
+mysql> USE LAB_06;
+Database changed
+mysql> CREATE TABLE Student
+    -> (Name varchar(40),
+    -> Registration_Number char(3) PRIMARY KEY,
+    -> GPA DECIMAL(3,2),
+    -> Convocation_Registration_Number char(3),
+    -> Class varchar(50));
+Query OK, 0 rows affected (0.33 sec)
+
+mysql> DESC Student;
++---------------------------------+--------------+------+-----+---------+-------+
+| Field                           | Type         | Null | Key | Default | Extra |
++---------------------------------+--------------+------+-----+---------+-------+
+| Name                            | varchar(40)  | YES  |     | NULL    |       |
+| Registration_Number             | char(3)      | NO   | PRI | NULL    |       |
+| GPA                             | decimal(3,2) | YES  |     | NULL    |       |
+| Convocation_Registration_Number | char(3)      | YES  |     | NULL    |       |
+| Class                           | varchar(50)  | YES  |     | NULL    |       |
++---------------------------------+--------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql> INSERT INTO Student
+    -> VALUES('Sameera', '425', 3.25, NULL, NULL),
+    -> ('Kasun','210',3.40, NULL,NULL),
+    -> ('Kalpa','201',3.10, NULL, NULL),
+    -> ('Chathura','312',3.85, NULL, NULL),
+    -> ('Lakmali','473',3.75, NULL, NULL),
+    -> ('Sidath','352',3.30, NULL, NULL),
+    -> ('Kumudu','111',3.70, NULL, NULL),
+    -> ('Nalin','456',3.05, NULL, NULL),
+    -> ('Rohani','324',3.70, NULL, NULL),
+    -> ('Chithra','231',3.30, NULL, NULL);
+Query OK, 10 rows affected (0.03 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> SELECT* FROM Student;
++----------+---------------------+------+---------------------------------+-------+
+| Name     | Registration_Number | GPA  | Convocation_Registration_Number | Class |
++----------+---------------------+------+---------------------------------+-------+
+| Kumudu   | 111                 | 3.70 | NULL                            | NULL  |
+| Kalpa    | 201                 | 3.10 | NULL                            | NULL  |
+| Kasun    | 210                 | 3.40 | NULL                            | NULL  |
+| Chithra  | 231                 | 3.30 | NULL                            | NULL  |
+| Chathura | 312                 | 3.85 | NULL                            | NULL  |
+| Rohani   | 324                 | 3.70 | NULL                            | NULL  |
+| Sidath   | 352                 | 3.30 | NULL                            | NULL  |
+| Sameera  | 425                 | 3.25 | NULL                            | NULL  |
+| Nalin    | 456                 | 3.05 | NULL                            | NULL  |
+| Lakmali  | 473                 | 3.75 | NULL                            | NULL  |
++----------+---------------------+------+---------------------------------+-------+
+10 rows in set (0.00 sec)
+
+
+2. Create another table named Convocation to store the details about the registration to the convocation. 
+   Table should have fields to hold the Last Name, Address, Age, Registration Number and Convocation Registration 
+   Number of each student. The Convocation Registration Number is given when a student registers for the convocation.
+   Determine a suitable primary key and a foreign key for this table.  
+
+mysql> CREATE TABLE Convocation
+    -> (Convocation_Registration_Number char(3) PRIMARY KEY,
+    -> Registration_Number char(3),
+    -> Last_Name varchar(40),
+    -> Age INT,
+    -> Address varchar(100),
+    -> FOREIGN KEY (Registration_Number) REFERENCES Student(Registration_Number));
+Query OK, 0 rows affected (0.27 sec)
+
+mysql> DESC Convocation;
++---------------------------------+--------------+------+-----+---------+-------+
+| Field                           | Type         | Null | Key | Default | Extra |
++---------------------------------+--------------+------+-----+---------+-------+
+| Convocation_Registration_Number | char(3)      | NO   | PRI | NULL    |       |
+| Registration_Number             | char(3)      | YES  | MUL | NULL    |       |
+| Last_Name                       | varchar(40)  | YES  |     | NULL    |       |
+| Age                             | int(11)      | YES  |     | NULL    |       |
+| Address                         | varchar(100) | YES  |     | NULL    |       |
++---------------------------------+--------------+------+-----+---------+-------+
+5 rows in set (0.00 sec) 
+
+
+3.  Create a stored procedure to store the details about the students as one student at a time in the 
+	Convocation table when they register for the convocation. (In the registration a unique convocation 
+	registration number should be given to each student and at the same time Convocation  Registration  Number  
+	column  in the  Student  table  should  be updated by inserting relevant registration numbers for that student.)  
+
+mysql> DELIMITER :
+mysql> CREATE PROCEDURE convocation_registration(IN conv_reg_no char(3), IN reg_no char(3), IN Lname varchar(40), IN age int, IN address varchar(100))
+    -> BEGIN
+    -> INSERT INTO Convocation (Convocation_Registration_Number, Registration_Number, Last_Name, Age, Address)
+    -> VALUE (conv_reg_no, reg_no, Lname, age, address);
+    -> UPDATE Student
+    -> SET
+    -> Student.Convocation_Registration_Number = conv_reg_no
+    -> WHERE Student.Registration_Number = reg_no;
+    -> END
+    -> :
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> DELIMITER ;
+
+
+
+4. 4. Perform the registration for Sameera, Chathura, Lakmali, Sidath and Nalin with registration numbers 
+   1, 2, 3, 4 and 5 respectively. Give suitable meaningful values for the rest of the columns for each of these students. 
+   Observe the updates made to the Student table. 
+
+mysql> CALL convocation_registration('1', '425', 'Weerasundara', 24, '07, Owala, Kiribathkumbura');
+mysql> Query OK, 0 rows affected (0.12 sec)
+
+mysql> CALL convocation_registration('2', '312', 'Bandara', 22, '105, Kandy road, Kadugannawa');
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> CALL convocation_registration('3', '473', 'Chandrasiri', 24, '118, Kadugannawa, Mudaliwaththa');
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CALL convocation_registration('4', '352', 'Gunarathne', 25, '08, Kadugannawa, Henawala');
+Query OK, 0 rows affected (0.13 sec)
+
+mysql> CALL convocation_registration('5', '456', 'Samarajeewa', 22, '72, Maligathanna, Kadugannawa');
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> SELECT* FROM Student;
++----------+---------------------+------+---------------------------------+-------+
+| Name     | Registration_Number | GPA  | Convocation_Registration_Number | Class |
++----------+---------------------+------+---------------------------------+-------+
+| Kumudu   | 111                 | 3.70 | NULL                            | NULL  |
+| Kalpa    | 201                 | 3.10 | NULL                            | NULL  |
+| Kasun    | 210                 | 3.40 | NULL                            | NULL  |
+| Chithra  | 231                 | 3.30 | NULL                            | NULL  |
+| Chathura | 312                 | 3.85 | 2                               | NULL  |
+| Rohani   | 324                 | 3.70 | NULL                            | NULL  |
+| Sidath   | 352                 | 3.30 | 4                               | NULL  |
+| Sameera  | 425                 | 3.25 | 1                               | NULL  |
+| Nalin    | 456                 | 3.05 | 5                               | NULL  |
+| Lakmali  | 473                 | 3.75 | 3                               | NULL  |
++----------+---------------------+------+---------------------------------+-------+
+10 rows in set (0.00 sec)
+
+
+5. Create a view called Registered to retrieve the details Name, Registration Number, GPA, Convocation Registration Number, 
+   Address and Age of those students who have registered for the convocation. Observe the view with the respective data.
+
+mysql> CREATE VIEW Registered AS
+    -> SELECT Student.Name, Student.Registration_Number, Student.GPA, Convocation.Convocation_Registration_Number, Convocation.Address, Convocation.Age
+    -> FROM Student, Convocation
+    -> WHERE Student.Registration_Number = Convocation.Registration_Number;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> SELECT * FROM Registered;
++----------+---------------------+------+---------------------------------+---------------------------------+------+
+| Name     | Registration_Number | GPA  | Convocation_Registration_Number | Address                         | Age  |
++----------+---------------------+------+---------------------------------+---------------------------------+------+
+| Sameera  | 425                 | 3.25 | 1                               | 07, Owala, Kiribathkumbura      |   24 |
+| Chathura | 312                 | 3.85 | 2                               | 105, Kandy road, Kadugannawa    |   22 |
+| Lakmali  | 473                 | 3.75 | 3                               | 118, Kadugannawa, Mudaliwaththa |   24 |
+| Sidath   | 352                 | 3.30 | 4                               | 08, Kadugannawa, Henawala       |   25 |
+| Nalin    | 456                 | 3.05 | 5                               | 72, Maligathanna, Kadugannawa   |   22 |
++----------+---------------------+------+---------------------------------+---------------------------------+------+
+5 rows in set (0.00 sec)
+
+
+6. Create a view called NotRegistered to retrieve the details Name, Registration Number, GPA,  Address  and  Age of  those  students  
+   who have  not  registered for  the convocation. Observe the view with the respective data.  
+
+//For not registered students, there is no Address and Age. Therefore only available information is in Student table
+
+
+mysql> CREATE VIEW NotRegistered AS
+    -> SELECT Student.Name, Student.Registration_Number, Student.GPA
+    -> FROM Student
+    -> WHERE Student.Registration_Number NOT IN
+    -> (SELECT Registration_Number
+    -> FROM Convocation);
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> SELECT * FROM NotRegistered;
++---------+---------------------+------+
+| Name    | Registration_Number | GPA  |
++---------+---------------------+------+
+| Kumudu  | 111                 | 3.70 |
+| Kalpa   | 201                 | 3.10 |
+| Kasun   | 210                 | 3.40 |
+| Chithra | 231                 | 3.30 |
+| Rohani  | 324                 | 3.70 |
++---------+---------------------+------+
+5 rows in set (0.00 sec)
+
+
+7.  Create a table called LateRegistration with the same columns as the Convocation table to store the details about the 
+	students who do the late registration. 
+
+mysql> CREATE TABLE LateRegistration
+    -> (Convocation_Registration_Number char(3) PRIMARY KEY,
+    -> Registration_Number char(3),
+    -> Last_Name varchar(40),
+    -> Age INT,
+    -> Address varchar(100),
+    -> FOREIGN KEY (Registration_Number) REFERENCES Student(Registration_Number));
+Query OK, 0 rows affected (0.26 sec)
+
+mysql> DESC LateRegistration;
++---------------------------------+--------------+------+-----+---------+-------+
+| Field                           | Type         | Null | Key | Default | Extra |
++---------------------------------+--------------+------+-----+---------+-------+
+| Convocation_Registration_Number | char(3)      | NO   | PRI | NULL    |       |
+| Registration_Number             | char(3)      | YES  | MUL | NULL    |       |
+| Last_Name                       | varchar(40)  | YES  |     | NULL    |       |
+| Age                             | int(11)      | YES  |     | NULL    |       |
+| Address                         | varchar(100) | YES  |     | NULL    |       |
++---------------------------------+--------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+
+8. Write a trigger to monitor the state of the LateRegistration table, so that after a late registration is done in this table, 
+   the Student table should be updated with the relevant Convocation Registration Number for that student. 
+
+
+mysql> CREATE TRIGGER Late_reg_trigger
+    -> AFTER INSERT ON LateRegistration
+    -> FOR EACH ROW
+    -> UPDATE Student
+    -> SET Student.Convocation_Registration_Number = NEW.Convocation_Registration_Number
+    -> WHERE Student.Registration_Number = NEW.Registration_Number;
+Query OK, 0 rows affected (0.11 sec)
+
+
+9. Perform the registration for Kasun, Kalpa, Kumudu, Rohani and Chithra with registration numbers 6, 7, 8, 9 and 10 respectively.
+   Give suitable meaningful values for the rest of the columns for each of these students. Observe the updates made to the Student table. 
+
+mysql> INSERT INTO LateRegistration
+    -> VALUE('6', '210', 'Jayawardhane', 27, '34, Watapuluwa, Kandy'),
+    -> ('7', '201', 'Silva', 28, '22, Gampola road, Peradeniya'),
+    -> ('8', '111', 'Jayakodi', 23, '100, Dawlagala road, Pilimatalawa'),
+    -> ('9', '324', 'Gamage', 23, '101, Udaperadeniya, Peradeniya'),
+    -> ('10', '231', 'Herath', 24, '134, Gampola road, Gelioya');
+Query OK, 5 rows affected (0.10 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql>  SELECT *FROM Student;
++----------+---------------------+------+---------------------------------+-------+
+| Name     | Registration_Number | GPA  | Convocation_Registration_Number | Class |
++----------+---------------------+------+---------------------------------+-------+
+| Kumudu   | 111                 | 3.70 | 8                               | NULL  |
+| Kalpa    | 201                 | 3.10 | 7                               | NULL  |
+| Kasun    | 210                 | 3.40 | 6                               | NULL  |
+| Chithra  | 231                 | 3.30 | 10                              | NULL  |
+| Chathura | 312                 | 3.85 | 2                               | NULL  |
+| Rohani   | 324                 | 3.70 | 9                               | NULL  |
+| Sidath   | 352                 | 3.30 | 4                               | NULL  |
+| Sameera  | 425                 | 3.25 | 1                               | NULL  |
+| Nalin    | 456                 | 3.05 | 5                               | NULL  |
+| Lakmali  | 473                 | 3.75 | 3                               | NULL  |
++----------+---------------------+------+---------------------------------+-------+
+10 rows in set (0.00 sec)
+
+
+10. Create a stored procedure to and fill the class column as follows. 
+ 
+	A. GPA >=3.7 First class honors 
+	B. GPA <3.7 and GPA>=3.3 Second class honors-upper division  
+	C. GPA <3.3 and GPA>=2.7 Second class honors-lower division  
+	D. GPA <2.7 and GPA>=2.0 Third class honors  
+
+	Call the stored procedure which you created at this step and observe the class values assigned to each student. 
+
+
+mysql> DELIMITER :
+mysql> CREATE PROCEDURE store_class()
+    -> BEGIN
+    -> UPDATE Student
+    -> SET Student.Class = CASE WHEN Student.GPA >= 3.7 THEN "First class honors"
+    -> WHEN (Student.GPA >= 3.3 AND Student.GPA < 3.7 ) THEN "Second class honors-upper division"
+    -> WHEN (Student.GPA >= 2.7 AND Student.GPA < 3.3 ) THEN "Second class honors-lower division"
+    -> WHEN (Student.GPA >= 2.0 AND Student.GPA < 2.7 ) THEN "Third class honors"
+    -> ELSE NULL
+    -> END;
+    -> END:
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> DELIMITER ;
+mysql> CALL store_class();
+Query OK, 10 rows affected (0.13 sec)
+
+mysql> SELECT *FROM Student;
++----------+---------------------+------+---------------------------------+------------------------------------+
+| Name     | Registration_Number | GPA  | Convocation_Registration_Number | Class                              |
++----------+---------------------+------+---------------------------------+------------------------------------+
+| Kumudu   | 111                 | 3.70 | 8                               | First class honors                 |
+| Kalpa    | 201                 | 3.10 | 7                               | Second class honors-lower division |
+| Kasun    | 210                 | 3.40 | 6                               | Second class honors-upper division |
+| Chithra  | 231                 | 3.30 | 10                              | Second class honors-upper division |
+| Chathura | 312                 | 3.85 | 2                               | First class honors                 |
+| Rohani   | 324                 | 3.70 | 9                               | First class honors                 |
+| Sidath   | 352                 | 3.30 | 4                               | Second class honors-upper division |
+| Sameera  | 425                 | 3.25 | 1                               | Second class honors-lower division |
+| Nalin    | 456                 | 3.05 | 5                               | Second class honors-lower division |
+| Lakmali  | 473                 | 3.75 | 3                               | First class honors                 |
++----------+---------------------+------+---------------------------------+------------------------------------+
+10 rows in set (0.00 sec)

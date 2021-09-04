@@ -1,0 +1,656 @@
+mysql> #CO226-Database Systems
+mysql> #Lab Number : 05
+mysql> #Topic : Writing SQL Queries - Part III 
+mysql> #E/16/388
+mysql> #WEERASUNDARA WMTMPB
+mysql> USE E16388Lab02;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql>
+mysql>
+mysql> #1. Write a nested query to list the details of the movies directed by a director,
+mysql> #A. who is also a reviewer. (1 mark)
+mysql>
+mysql>mysql> SELECT* FROM MOVIE
+    -> WHERE Director =
+    -> (SELECT Reviewer_Name
+    -> FROM REVIEWER
+    ->  WHERE REVIEWER.Reviewer_Name = MOVIE.DIRECTOR);
++----------+---------+------+---------------+
+| Movie_ID | Title   | Year | Director      |
++----------+---------+------+---------------+
+| 105      | Titanic | 1997 | James Cameron |
+| 107      | Avatar  | 2009 | James Cameron |
++----------+---------+------+---------------+
+2 rows in set (0.17 sec)
+
+mysql>
+mysql>
+mysql> #B. who is not a reviewer. (1 mark)
+mysql> SELECT* FROM MOVIE
+    ->  WHERE Director NOT IN
+    -> (SELECT Reviewer_Name
+    -> FROM REVIEWER);
++----------+---------------------+------+------------------+
+| Movie_ID | Title               | Year | Director         |
++----------+---------------------+------+------------------+
+| 101      | Gone with the Wind  | 1964 | Victor Fleming   |
+| 102      | Star Wars           | 2002 | George Lucas     |
+| 103      | The Sound of Music  | 1990 | Robert Wise      |
+| 104      | E.T.                | 1982 | Steven Speilberg |
+| 108      | Raiders of Lost Ark | 1981 | Steven Speilberg |
++----------+---------------------+------+------------------+
+5 rows in set (0.02 sec)
+
+mysql>
+mysql>
+mysql> #2. Write a nested query to list the details of the movie ratings,
+mysql>
+mysql> #A reviewed by the reviewer ‘Sarah Martinez’. (1 mark)
+mysql>
+mysql> SELECT*
+    -> FROM RATING
+    -> WHERE Reviewer_ID =
+    -> (SELECT Reviewer_ID
+    -> FROM REVIEWER
+    -> WHERE REVIEWER.Reviewer_Name = 'Sarah Martinez');
++-------------+----------+-------+-------------+
+| Reviewer_ID | Movie_ID | Stars | Rating_Date |
++-------------+----------+-------+-------------+
+| 201         | 101      |     2 | 2011-01-22  |
+| 201         | 101      |     4 | 2011-01-27  |
++-------------+----------+-------+-------------+
+2 rows in set (1.10 sec)
+
+mysql>
+mysql>
+mysql> #B. not reviewed by the reviewer ‘Sarah Martinez’. (1 mark)
+mysql>
+mysql> SELECT*
+    -> FROM RATING
+    -> WHERE Reviewer_ID NOT
+    -> IN
+    -> (SELECT Reviewer_ID
+    -> FROM REVIEWER
+    -> WHERE REVIEWER.Reviewer_Name = 'Sarah Martinez');
++-------------+----------+-------+-------------+
+| Reviewer_ID | Movie_ID | Stars | Rating_Date |
++-------------+----------+-------+-------------+
+| 202         | 106      |     4 | NULL        |
+| 203         | 103      |     2 | 2011-01-20  |
+| 203         | 108      |     4 | 2011-01-12  |
+| 203         | 108      |     2 | 2011-01-30  |
+| 204         | 101      |     3 | 2011-01-09  |
+| 205         | 103      |     3 | 2011-01-27  |
+| 205         | 104      |     2 | 2011-01-22  |
+| 205         | 108      |     4 | NULL        |
+| 206         | 107      |     3 | 2011-01-15  |
+| 206         | 106      |     5 | 2011-01-19  |
+| 207         | 107      |     5 | 2011-01-20  |
+| 208         | 104      |     3 | 2011-01-02  |
++-------------+----------+-------+-------------+
+12 rows in set (0.07 sec)
+mysql>
+mysql> #3. Write a nested query to list the ​movie id​s where each movie has some rating,
+mysql>
+mysql> #A. less than to any of the ratings received by the movie which has a​ movieid equal to ​103​. (1 mark)
+mysql>
+mysql> SELECT DISTINCT Movie_ID
+    -> FROM RATING
+    -> WHERE Stars < ANY
+    -> (SELECT Stars
+    -> FROM RATING
+    -> WHERE Movie_ID = 103)
+    -> AND Movie_ID != 103;
++----------+
+| Movie_ID |
++----------+
+| 101      |
+| 104      |
+| 108      |
++----------+
+3 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql> #B. less than or equal to any of the ratings received by the movie which has a movie id equal to 103. (1 mark)
+mysql>
+mysql> SELECT DISTINCT Movie_ID
+    -> FROM RATING
+    -> WHERE Stars <= ANY
+    -> (SELECT Stars
+    -> FROM RATING
+    -> WHERE Movie_ID = 103)
+    -> AND Movie_ID != 103;
++----------+
+| Movie_ID |
++----------+
+| 101      |
+| 104      |
+| 107      |
+| 108      |
++----------+
+4 rows in set (0.00 sec)
+
+mysql>
+
+mysql>
+mysql> #C. equal to any of the ratings received by the movie which has a movie id equal to 103.
+mysql>
+mysql> SELECT DISTINCT Movie_ID
+    -> FROM RATING
+    -> WHERE Stars IN
+    -> (SELECT Stars
+    -> FROM RATING
+    -> WHERE Movie_ID = 103)
+    -> AND Movie_ID != 103;
++----------+
+| Movie_ID |
++----------+
+| 101      |
+| 108      |
+| 104      |
+| 107      |
++----------+
+4 rows in set (0.03 sec)
+
+mysql>
+mysql> #D. greater than to any of the ratings received by the movie which has a movie id equal to 103. (1 mark)
+mysql>
+mysql> SELECT DISTINCT Movie_ID
+    -> FROM RATING
+    -> WHERE Stars > ANY
+    -> (SELECT Stars
+    -> FROM RATING
+    -> WHERE Movie_ID = 103)
+    -> AND Movie_ID != 103;
++----------+
+| Movie_ID |
++----------+
+| 101      |
+| 104      |
+| 106      |
+| 107      |
+| 108      |
++----------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql> #E. greater than or equal to any of the ratings received by the movie which has a movie id equal to 103. (1 mark)
+mysql>
+mysql> SELECT DISTINCT Movie_ID
+    -> FROM RATING
+    -> WHERE Stars >= ANY
+    -> (SELECT Stars
+    -> FROM RATING
+    -> WHERE Movie_ID = 103)
+    -> AND Movie_ID != 103;
++----------+
+| Movie_ID |
++----------+
+| 101      |
+| 104      |
+| 106      |
+| 107      |
+| 108      |
++----------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql> #F. not equal to any of the ratings received by the movie which has a movie id equal to 103. (1 mark)
+mysql>
+mysql> SELECT DISTINCT Movie_ID
+    -> FROM RATING
+    -> WHERE Stars != ANY
+    -> (SELECT Stars
+    -> FROM RATING
+    -> WHERE Movie_ID = 103)
+    -> AND Movie_ID != 103;
++----------+
+| Movie_ID |
++----------+
+| 101      |
+| 104      |
+| 106      |
+| 107      |
+| 108      |
++----------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql> #4. Write a nested query to list the​reviewerid​s who has the same (​movieid,stars​)                combination on some movie which has a rating date equal to ​2011-01-12​. (5             marks)
+mysql>
+mysql> SELECT DISTINCT Reviewer_ID
+    -> FROM RATING
+    -> WHERE (Movie_ID, Stars) =
+    -> (SELECT Movie_ID, Stars
+    -> FROM RATING
+    -> WHERE Rating_Date = '2011-01-12');
++-------------+
+| Reviewer_ID |
++-------------+
+| 203         |
+| 205         |
++-------------+
+2 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql> #5. Find all the years that have a movie that received a rating of 4 or 5 and sort them im in increasing order of the year. Write,
+mysql>
+mysql> #A. a non-nested query. (5 marks)
+mysql>
+mysql> SELECT DISTINCT Year
+    -> FROM MOVIE,RATING
+    -> WHERE
+    -> (RATING.Stars = 4 OR RATING.Stars = 5)
+    -> AND MOVIE.Movie_ID = RATING.Movie_ID
+    -> ORDER BY YEAR;
++------+
+| Year |
++------+
+| 1937 |
+| 1939 |
+| 1981 |
+| 2009 |
++------+
+4 rows in set (0.09 sec)
+
+mysql>
+mysql>
+mysql> #B. a non-correlated nested query. (5 marks)
+mysql>
+mysql> SELECT DISTINCT Year
+    -> FROM MOVIE
+    -> WHERE
+    -> Movie_ID IN
+    -> (SELECT Movie_ID
+    -> FROM RATING
+    -> WHERE (RATING.Stars = 4 OR RATING.Stars = 5))
+    -> ORDER BY YEAR;
++------+
+| Year |
++------+
+| 1937 |
+| 1939 |
+| 1981 |
+| 2009 |
++------+
+4 rows in set (0.00 sec)
+
+mysql>
+mysql> #6. Find the ​titles​ of all movies that have no ratings. Write,
+mysql>
+mysql> #A. non-correlated nested query. (5 marks)
+mysql>
+mysql> #B. a correlated nested query. (5 marks)
+mysql> SELECT Title
+    -> FROM MOVIE
+    -> WHERE Movie_ID NOT IN
+    -> (SELECT Movie_ID
+    -> FROM RATING);
++-----------+
+| Title     |
++-----------+
+| Star Wars |
+| Titanic   |
++-----------+
+2 rows in set (0.09 sec)
+
+mysql>
+mysql> #B. a correlated nested query. (5 marks)
+mysql>
+mysql> SELECT Title
+    -> FROM MOVIE m
+    -> WHERE Movie_ID NOT IN
+    -> (SELECT Movie_ID
+    -> FROM RATING
+    -> WHERE Movie_ID = m.Movie_ID);
++-----------+
+| Title     |
++-----------+
+| Star Wars |
+| Titanic   |
++-----------+
+2 rows in set (0.05 sec)
+
+mysql>
+mysql> #7. Some reviewers did not provide a date with their rating. Find the names of all reviewers who have a NULL value for the date. Write,,
+mysql>
+mysql> #A. a non-nested query. (5 marks)
+mysql>
+mysql> SELECT Reviewer_Name
+    -> FROM REVIEWER,RATING
+    -> WHERE RATING.Rating_Date IS NULL
+    -> AND REVIEWER.Reviewer_ID = RATING.Reviewer_ID;
++---------------+
+| Reviewer_Name |
++---------------+
+| Daniel Lewis  |
+| Chris Jackson |
++---------------+
+2 rows in set (0.10 sec)
+
+mysql>
+mysql> #B. a non-correlated nested query. (5 marks)
+mysql> SELECT DISTINCT Reviewer_Name
+    -> FROM REVIEWER
+    -> WHERE Reviewer_ID IN
+    -> (SELECT Reviewer_ID
+    -> FROM RATING
+    -> WHERE RATING.Rating_Date IS NULL);
++---------------+
+| Reviewer_Name |
++---------------+
+| Daniel Lewis  |
+| Chris Jackson |
++---------------+
+2 rows in set (0.00 sec)
+
+mysql>
+mysql> #C. a correlated nested query. (5 marks)
+mysql> SELECT DISTINCT Reviewer_Name
+    -> FROM REVIEWER r
+    -> WHERE Reviewer_ID IN
+    -> (SELECT Reviewer_ID
+    -> FROM RATING
+    ->  WHERE Rating_Date IS NULLL
+    -> AND r.Reviewer_ID = Reviewer_ID);
++---------------+
+| Reviewer_Name |
++---------------+
+| Daniel Lewis  |
+| Chris Jackson |
++---------------+
+2 rows in set (0.00 sec)
+
+mysql>
+mysql> #8. For each movie that has some rating, find
+mysql>
+mysql> #A. the highest ​stars​ value received. (2 marks)
+mysql> SELECT m.Title, MAX(r.Stars)
+    -> FROM MOVIE m
+    -> JOIN RATING r
+    -> ON m.Movie_ID = r.Movie_ID
+    -> GROUP BY r.Movie_ID
+    -> ORDER BY m.TITLE;
++---------------------+--------------+
+| Title               | MAX(r.Stars) |
++---------------------+--------------+
+| Avatar              |            5 |
+| E.T.                |            3 |
+| Gone with the Wind  |            4 |
+| Raiders of Lost Ark |            4 |
+| Snow White          |            5 |
+| The Sound of Music  |            3 |
++---------------------+--------------+
+6 rows in set (0.00 sec)
+
+mysql>
+mysql> #B. the least ​stars​ value received. (2 marks)
+mysql> SELECT m.Title, MIN(r.Stars)
+    -> FROM MOVIE m
+    -> JOIN RATING r
+    -> ON m.Movie_ID = r.Movie_ID
+    -> GROUP BY r.Movie_ID
+    -> ORDER BY m.TITLE;
++---------------------+--------------+
+| Title               | MIN(r.Stars) |
++---------------------+--------------+
+| Avatar              |            3 |
+| E.T.                |            2 |
+| Gone with the Wind  |            2 |
+| Raiders of Lost Ark |            2 |
+| Snow White          |            4 |
+| The Sound of Music  |            2 |
++---------------------+--------------+
+6 rows in set (0.00 sec)
+
+mysql>
+mysql> #C. the average value of ​stars​ received. (2 marks)
+mysql> SELECT m.Title, AVG(r.Stars)
+    -> FROM MOVIE m
+    -> JOIN RATING r
+    -> ON m.Movie_ID = r.Movie_ID
+    -> GROUP BY r.Movie_ID
+    -> ORDER BY m.TITLE;
++---------------------+--------------+
+| Title               | AVG(r.Stars) |
++---------------------+--------------+
+| Avatar              |       4.0000 |
+| E.T.                |       2.5000 |
+| Gone with the Wind  |       3.0000 |
+| Raiders of Lost Ark |       3.3333 |
+| Snow White          |       4.5000 |
+| The Sound of Music  |       2.5000 |
++---------------------+--------------+
+6 rows in set (0.01 sec)
+
+mysql>
+mysql> #D. the sum of all the ​stars ​received. (2 marks)
+mysql> SELECT m.Title, SUM(r.Stars)
+    -> FROM MOVIE m
+    -> JOIN RATING r
+    -> ON m.Movie_ID = r.Movie_ID
+    -> GROUP BY r.Movie_ID
+    -> ORDER BY m.TITLE;
++---------------------+--------------+
+| Title               | SUM(r.Stars) |
++---------------------+--------------+
+| Avatar              |            8 |
+| E.T.                |            5 |
+| Gone with the Wind  |            9 |
+| Raiders of Lost Ark |           10 |
+| Snow White          |            9 |
+| The Sound of Music  |            5 |
++---------------------+--------------+
+6 rows in set (0.00 sec)
+
+mysql>
+mysql> SELECT m.Title,
+    -> COUNT(r.Movie_ID)
+    -> FROM MOVIE m
+    -> JOIN RATING r
+    -> ON m.Movie_ID = r.Movie_ID
+    -> GROUP BY r.Movie_ID
+    -> ORDER BY m.TITLE;
++---------------------+-------------------+
+| Title               | COUNT(r.Movie_ID) |
++---------------------+-------------------+
+| Avatar              |                 2 |
+| E.T.                |                 2 |
+| Gone with the Wind  |                 3 |
+| Raiders of Lost Ark |                 3 |
+| Snow White          |                 2 |
+| The Sound of Music  |                 2 |
++---------------------+-------------------+
+6 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql> #9. Find the names of all the reviewers who have contributed three or more ratings. WWrite,
+mysql>
+mysql> #A. a non-nested query. (5 marks)
+mysql> SELECT Reviewer_Name
+    -> FROM REVIEWER, RATING
+    -> WHERE REVIEWER.Reviewer_ID = RATING.Reviewer_ID
+    -> GROUP BY RATING.Reviewer_ID
+    -> HAVING COUNT(RATING.Reviewer_ID) >= 3;
++-----------------+
+| Reviewer_Name   |
++-----------------+
+| Brittany Harris |
+| Chris Jackson   |
++-----------------+
+2 rows in set (0.00 sec)
+
+mysql>
+mysql> #B. a non-correlated nested query. (5 marks)
+mysql> SELECT Reviewer_Name
+    -> FROM REVIEWER
+    -> WHERE Reviewer_ID IN
+    -> (SELECT Reviewer_ID
+    -> FROM (SELECT COUNT(Reviewer_ID) as ratings, Reviewer_ID
+    -> FROM RATING
+    -> GROUP BY Reviewer_ID) res
+    -> WHERE res.ratings >=3);
++-----------------+
+| Reviewer_Name   |
++-----------------+
+| Brittany Harris |
+| Chris Jackson   |
++-----------------+
+2 rows in set (0.00 sec)
+
+mysql>
+mysql> #C. a correlated nested query. (5 marks)
+mysql>
+mysql> SELECT Reviewer_Name
+    -> FROM REVIEWER r
+    -> WHERE Reviewer_ID IN
+    -> (SELECT Reviewer_ID
+    -> FROM (SELECT COUNT(Reviewer_ID) as ratings, Reviewer_ID
+    -> FROM RATING
+    -> GROUP BY Reviewer_ID) res
+    -> WHERE r.Reviewer_ID = res.Reviewer_ID
+    -> AND res.ratings >=3);
++-----------------+
+| Reviewer_Name   |
++-----------------+
+| Brittany Harris |
+| Chris Jackson   |
++-----------------+
+2 rows in set (0.00 sec)
+
+mysql>
+mysql> #10.List the movietitles and averageratings, from the highest-rated to lowest-rated.If two or more movies have the same average rating, list them in alphabetical order. (5 marks)
+mysql> SELECT m.Title, AVG(r.Stars)
+    -> FROM MOVIE m
+    -> JOIN RATING r
+    -> ON m.Movie_ID = r.Movie_ID
+    -> GROUP BY r.Movie_ID
+    -> ORDER BY AVG(r.Stars) DESC, m.Title;
++---------------------+--------------+
+| Title               | AVG(r.Stars) |
++---------------------+--------------+
+| Snow White          |       4.5000 |
+| Avatar              |       4.0000 |
+| Raiders of Lost Ark |       3.3333 |
+| Gone with the Wind  |       3.0000 |
+| E.T.                |       2.5000 |
+| The Sound of Music  |       2.5000 |
++---------------------+--------------+
+6 rows in set (0.00 sec)
+
+mysql>
+mysql> #11.Remove all ratings where the movie's year is before 1970 or after 2000. (5 marks)
+mysql> DELETE
+    -> FROM RATING
+    -> WHERE Movie_ID IN
+    -> (SELECT Movie_ID
+    -> FROM MOVIE
+    -> WHERE Year < '1970' OR Year > '2000');
+Query OK, 9 rows affected (0.05 sec)
+
+mysql> SELECT* FROM RATING;
++-------------+----------+-------+-------------+
+| Reviewer_ID | Movie_ID | Stars | Rating_Date |
++-------------+----------+-------+-------------+
+| 203         | 108      |     4 | 2011-01-12  |
+| 203         | 108      |     2 | 2011-01-30  |
+| 205         | 104      |     2 | 2011-01-22  |
+| 205         | 108      |     4 | NULL        |
+| 208         | 104      |     3 | 2011-01-02  |
++-------------+----------+-------+-------------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql> #12.Remove all ratings where the rating date is NULL. (5 marks)
+mysql>
+mysql> DELETE
+    -> FROM RATING
+    -> WHERE Rating_Date IS NULL;
+Query OK, 1 row affected (0.14 sec)
+
+mysql> SELECT* FROM RATING;
++-------------+----------+-------+-------------+
+| Reviewer_ID | Movie_ID | Stars | Rating_Date |
++-------------+----------+-------+-------------+
+| 203         | 108      |     4 | 2011-01-12  |
+| 203         | 108      |     2 | 2011-01-30  |
+| 205         | 104      |     2 | 2011-01-22  |
+| 208         | 104      |     3 | 2011-01-02  |
++-------------+----------+-------+-------------+
+4 rows in set (0.00 sec)
+
+mysql> #13.Insert 5-star ratings by James Cameron for all movies in the database. Leave the review date as NULL. (5 marks)
+mysql> INSERT INTO RATING
+    -> SELECT
+    -> (SELECT  Reviewer_ID FROM REVIEWER
+    -> WHERE  Reviewer_Name = 'James Cameron'), Movie_ID, 5, NULL
+    -> FROM MOVIE;
+Query OK, 8 rows affected (0.09 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> SELECT* FROM RATING;
++-------------+----------+-------+-------------+
+| Reviewer_ID | Movie_ID | Stars | Rating_Date |
++-------------+----------+-------+-------------+
+| 203         | 108      |     4 | 2011-01-12  |
+| 203         | 108      |     2 | 2011-01-30  |
+| 205         | 104      |     2 | 2011-01-22  |
+| 208         | 104      |     3 | 2011-01-02  |
+| 207         | 101      |     5 | NULL        |
+| 207         | 102      |     5 | NULL        |
+| 207         | 103      |     5 | NULL        |
+| 207         | 104      |     5 | NULL        |
+| 207         | 105      |     5 | NULL        |
+| 207         | 106      |     5 | NULL        |
+| 207         | 107      |     5 | NULL        |
+| 207         | 108      |     5 | NULL        |
++-------------+----------+-------+-------------+
+12 rows in set (0.00 sec)
+
+mysql>
+mysql> 
+mysql> #14.For all movies that have an average rating of 4 stars or higher, add 25 to the release year. (Update the existing tuples. Do not insert new tuples). (5 marks)
+mysql>
+mysql> UPDATE MOVIE
+    -> SET Year = Year + 25
+    -> WHERE MOVIE.Movie_ID IN
+    -> (SELECT Movie_ID
+    -> FROM RATING
+    -> GROUP BY Movie_ID
+    -> HAVING AVG(Stars) >= 4);
+Query OK, 6 rows affected (0.13 sec)
+Rows matched: 6  Changed: 6  Warnings: 0
+
+mysql> SELECT * FROM MOVIE;
++----------+---------------------+------+------------------+
+| Movie_ID | Title               | Year | Director         |
++----------+---------------------+------+------------------+
+| 101      | Gone with the Wind  | 1964 | Victor Fleming   |
+| 102      | Star Wars           | 2002 | George Lucas     |
+| 103      | The Sound of Music  | 1990 | Robert Wise      |
+| 104      | E.T.                | 1982 | Steven Speilberg |
+| 105      | Titanic             | 2022 | James Cameron    |
+| 106      | Snow White          | 1962 | NULL             |
+| 107      | Avatar              | 2034 | James Cameron    |
+| 108      | Raiders of Lost Ark | 1981 | Steven Speilberg |
++----------+---------------------+------+------------------+
+8 rows in set (0.00 sec)
+
+mysql>
+
+
+
+
+
+
+
